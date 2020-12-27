@@ -18,7 +18,7 @@ def read_streaming_prediction(path):
     df = spark.readStream.schema(df_tmp.schema).parquet(path)
     df = df.select('review', 'star_rating', 'prediction')
 
-    writer = df.writeStream.format("console").outputMode("update").trigger(processingTime='10 seconds')
+    writer = df.writeStream.format("console").outputMode("update").trigger(processingTime='5 seconds')
 
     streaming_query = writer.start()
     streaming_query.awaitTermination()

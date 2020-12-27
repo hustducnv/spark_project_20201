@@ -43,7 +43,7 @@ def realtime_prediction(model_path, source_dir, checkpoint_dir, result_dir):
               .format('parquet')
               .option('path', result_dir)
               .outputMode('append')
-              .trigger(processingTime='10 seconds')
+              .trigger(processingTime='5 seconds')
               .option('checkpointLocation', checkpoint_dir)
               )
 
@@ -57,7 +57,11 @@ if __name__ == '__main__':
     import sys
 
     model_path = sys.argv[1]
+    print(model_path)
     realtime_review_dir = sys.argv[2]
-    checkpoint_dir = sys.argv[3]
-    result_dir = sys.argv[4]
+    print(realtime_review_dir)
+    result_dir = sys.argv[3]
+    print(result_dir)
+    checkpoint_dir = sys.argv[4]
+    print(checkpoint_dir)
     realtime_prediction(model_path, realtime_review_dir, checkpoint_dir, result_dir)

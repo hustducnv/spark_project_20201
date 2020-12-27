@@ -49,10 +49,11 @@ def train_model(csv_file, save_dir):
     # 2. DATA PRE-PROCESSING
     print('2. DATA PRE-PROCESSING', '#'*100)
     # 2.1 remove rating  == 5, 6
-    new_df = review_df.filter((review_df.star_rating > 6) | (review_df.star_rating < 5))
+    # new_df = review_df.filter((review_df.star_rating > 6) | (review_df.star_rating < 5))
+    new_df = review_df
 
     # 2.2 map rating - label
-    map_rating_label_function = F.udf(lambda x: 0 if x < 5 else 1, IntegerType())
+    map_rating_label_function = F.udf(lambda x: 0 if x <= 5 else 1, IntegerType())
     new_df = new_df.withColumn('label', map_rating_label_function('star_rating'))
 
     # 2.3 concatenate title and content = comment
@@ -91,6 +92,7 @@ def train_model(csv_file, save_dir):
 
     # 3.2 train test split
     df_train, df_test = data_new.randomSplit([0.8, 0.2], seed=0)
+    # df_train = df_train.filter((F.col('star_rating') < 4) | (F.col('star_rating') > 7))
     print('df_train: ')
     df_train.select('comment_id', 'label').groupBy('label').count().show()
     print('df_test: ')
@@ -142,7 +144,6 @@ def build_model_pipeline():
     TF (term frequency): number of times the word occurs in a sepcific document
     DF (document frequency): number of times a word coccurs in collection of documents
     TF-IDF (TF - inverse DF): measures the significace of a word in a document
-    TF-IDF = TF / DF
     """
 
     # 1. tokenize words, convert word to lowercase
@@ -161,10 +162,14 @@ def build_model_pipeline():
     )
 
     # 3. TF
-    cv = CountVectorizer(
+    # cv = CountVectorizer(
+    #     inputCol='review_tokens',
+    #     outputCol='tf',
+    #     vocabSize=200000
+    # )
+    cv = HashingTF(
         inputCol='review_tokens',
-        outputCol='tf',
-        vocabSize=200000
+        outputCol='tf'
     )
 
     # 4. IDF
@@ -185,5 +190,5 @@ if __name__ == '__main__':
     base_dir = os.path.dirname(__file__)
     print(base_dir)
     save_dir = os.path.join(base_dir, 'model', 'NB')
-    data_path = "E:/code/BigDataCourse/data/reviews_full"
+    data_path = "/home/ducnv/code/SPARK/data/reviews_train/"
     train_model(data_path, save_dir)

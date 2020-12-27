@@ -23,7 +23,7 @@ def preprocessing(file, film_type, save_dir=None):
 
 
     # 1. READ DATA
-    # print('1. READ DATA', '#'*50)
+    print('1. READING DATA from {}'.format(file), '#'*50)
     spark = (SparkSession
              .builder
              .appName('Data Preprocessing')
@@ -37,6 +37,7 @@ def preprocessing(file, film_type, save_dir=None):
 
 
     # 2. PREPROCESSING
+    print('# 2. PREPROCESSING')
     sf_map_release_date = F.udf(map_str_to_datetime, DateType())
     sf_map_str_to_list = F.udf(map_str_to_list, ArrayType(StringType()))
     sf_map_budget = F.udf(map_budget, IntegerType())
@@ -181,6 +182,7 @@ def preprocessing(file, film_type, save_dir=None):
 
     # SAVE TO PARQUET
     if save_dir is not None:
+        print('Saving data to {}'.format(save_dir))
         final_df.write.parquet(save_dir, mode='append')
         print('save data to {}'.format(save_dir))
 
@@ -188,18 +190,20 @@ def preprocessing(file, film_type, save_dir=None):
 
 
 if __name__ == '__main__':
-    import os
     from time import time
     data_dir = sys.argv[1]
     save_dir = sys.argv[2]
-    files = os.listdir(data_dir)
+    files_1 = ['documentary.json', 'feature.json',
+             'miniseries.json', 'short_film.json',
+             'tv_movies', 'tv_series.json',
+             'tv_short.json', 'tv_special.json',
+             'video.json']
+    files = ['miniseries.json']
 
     for _file in files:
-        if _file == 'short_film.json':
-            continue
         start_time = time()
         print('preprocessing: {}'.format(_file), '#'*100)
-        path = os.path.join(data_dir, _file)
+        path = data_dir + '/' + _file
         film_type = _file.replace('.json', '')
         preprocessing(path, film_type, save_dir)
         print('Done! Time: {}'.format(time() - start_time), '#'*10)
