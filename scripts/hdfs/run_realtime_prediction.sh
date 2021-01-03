@@ -1,6 +1,6 @@
 #!/bin/bash
 python /home/ducnv/code/SPARK/realtime_prediction.py \
-/home/ducnv/code/SPARK/model/NB/1609045012.721516 \
-/home/ducnv/code/SPARK/data/realtime_reviews  \
-/home/ducnv/code/SPARK/data/predictions/results \
-/home/ducnv/code/SPARK/data/predictions/checkpoint
+hdfs://spark-master:9000/user/LargeMuch/ML/models/1609654873.442228 \
+hdfs://spark-master:9000/user/LargeMuch/ML/realtime_reviews  \
+hdfs://spark-master:9000/user/LargeMuch/ML/predictions/results \
+hdfs://spark-master:9000/user/LargeMuch/ML/predictions/checkpoint
